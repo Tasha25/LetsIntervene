@@ -1,0 +1,96 @@
+post '/login' do
+
+  user = User.find_by_username(params[:username])
+  if user.paswword == params[:password]
+    session[:user_id] = user.id
+    redirect '/'
+  else
+    @errors = user.errors.messages #we have to find out how error messages work.
+    erb :login
+  end
+end
+
+
+
+<!-- Okay, this work in the scenario you don't want to go through adding extra gems. You see if the user being nil is false and then you run the errors and ask them to sign up again.
+ -->
+
+
+<!-- VIEWS
+Sinatra: user_new.erb
+# This is any file that you will have a new user form
+-->
+
+<% if @user.nil? == false %>
+
+<% if @user.errors.any? %>
+<div id="error_explanation">
+  <h2> <%= @user.errors.count  %>
+    prohibited this user from being saved:</h2>
+    <p>There were problems with the following fields </p>
+    <ul>
+      <% @user.errors.full_messages.each do |msg| %>
+      <li> <%= msg %></li>
+      <% end %>
+    </ul>
+  </div>
+
+  <form action="/users/signup" method="post">
+    <p> New User Sign Up </p>
+
+    <label> Username <input type="text" name="username"/> </label> </br>
+    <label> Email <input type="text" name="email"/> </label></br>
+    <label> Password <input type="password" name="password"/> </label></br>
+    <label> Password Confirmation<input type="password" name="password_confirmation"/> </label></br>
+    <input type="submit" value="Sign Up">
+
+  </form>
+    <% end %>
+
+  <% else %>
+  <form action="/users/signup" method="post">
+    <p> New User Sign Up </p>
+
+    <label> Username <input type="text" name="username"/> </label> </br>
+    <label> Email <input type="text" name="email"/> </label></br>
+    <label> Password <input type="password" name="password"/> </label></br>
+    <label> Password Confirmation<input type="password" name="password_confirmation"/> </label></br>
+    <input type="submit" value="Sign Up">
+
+  </form>
+
+  <% end %>
+
+
+In the "controller"
+
+<!-- CONTROLLER
+Sinatra: main.rb
+# This should be in the file that controlls your application
+-->
+
+post '/users/signup' do
+
+  @user = User.create(
+    :username => params[:username],
+    :email => params[:email],
+    :password => params[:password],
+    :password_confirmation => params[:password_confirmation]
+    )
+
+  session[:username] = params[:username]
+
+  if @user.save
+    redirect '/users'
+  else
+    erb :user_new
+<!--     This is important if you use a redirect it will not work. You have to use a erb file -->
+  end
+end
+
+
+
+<!-- If you want to use other folders in Sinatra and other files in that folder you will have to do the following and yes! you need the ".to_sym" at the end
+
+ -->
+<%= erb 'shared/_error_messages'.to_sym %>

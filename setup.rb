@@ -8,6 +8,9 @@ ActiveRecord::Base.establish_connection(
 
 #migration into database will be:
 
+
+
+####### Serice Providers
 class CreateServiceProvider < ActiveRecord::Migration
   def self.up
     create_table :service_providers do |t|
@@ -37,6 +40,8 @@ end
 end
 
 
+##### Service Category
+
 class CreateServiceCategory < ActiveRecord::Migration
   def self.up
     create_table :service_categories do |t|
@@ -50,6 +55,9 @@ end
   end
 end
 
+
+
+##@# Join Table
 class JoinTableServiceCategoriesServiceProviders < ActiveRecord::Migration
   def self.up
     create_table :service_categories_service_providers, :id => false do |t|
@@ -65,12 +73,32 @@ class JoinTableServiceCategoriesServiceProviders < ActiveRecord::Migration
 end
 
 
+#### Users
+
+class User < ActiveRecord::Migration
+  def self.up
+    create_table :users do |t|
+      t.string :username
+      t.string :password_digest
+      t.string :email
+      t.string :salt
+      t.string :encrypted_password
+      t.timestamps
+    end
+  end
+
+   def self.down
+    drop_table :users
+  end
+end
+
+
 #call the migrations
 
 # CreateServiceProvider.up
 # CreateServiceCategory.up
-JoinTableServiceCategoriesServiceProviders.up
-
+# JoinTableServiceCategoriesServiceProviders.up
+User.up
 
 
 #you can now run the database by running ruby setup.rb

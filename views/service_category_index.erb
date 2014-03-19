@@ -1,0 +1,14 @@
+<ul>
+<a href="/service_categories/new"> Add service category </a> </li>
+</ul>
+
+
+
+Service Categories
+
+
+<% @service_categories.each do |service_category| %>
+
+<%= service_category.name%> , <%= service_category.id %></br>
+
+<% end %>

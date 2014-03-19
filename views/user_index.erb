@@ -1,0 +1,14 @@
+<div id='flash' class='success'>
+<h2>  <%= flash[:success] %> </h2>
+</div>
+
+ <li>  <a href="/users/signup">Create new user</a></li>
+
+<% @users.each do |user| %>
+id: <%= user.id %>,
+name: <%= user.username %> </br>
+email: <%= user.email %> </br>
+password: <%= user.password rescue nil %> </br>
+e password: <%= user.encrypt_password rescue nil %> </br>
+salt password: <%= user.salt rescue nil %> </br>
+<% end %>

@@ -11,6 +11,10 @@ post '/login' do
 end
 
 
+http://github.com/thoughtbot/paperclip/
+
+
+
 
 <!-- Okay, this work in the scenario you don't want to go through adding extra gems. You see if the user being nil is false and then you run the errors and ask them to sign up again.
  -->
@@ -62,11 +66,11 @@ Sinatra: user_new.erb
   <% end %>
 
 
-In the "controller"
+
 
 <!-- CONTROLLER
 Sinatra: main.rb
-# This should be in the file that controlls your application
+# This should be in the file that controlls your application. I call mine main.rb in the sinatra file.
 -->
 
 post '/users/signup' do
@@ -94,3 +98,149 @@ end
 
  -->
 <%= erb 'shared/_error_messages'.to_sym %>
+
+<!-- This will be the way to upload a file on a form. -->
+1. make sure your form has the following in the new object file.
+# service_providers_new.rb
+<form action="/service_providers/new" method="post" enctype="multipart/form-data">
+<p>Please pick an image: <input type="file" name="thefile"  </p>
+<input type="submit" value="Submit">
+</form>
+
+2. Make sure in main.rb you have the ruby gem pathname and uri. This will help you to find the paths and etc.
+# main.rb
+require 'pathname'
+require 'uri'
+
+APP_ROOT = Pathname.new(File.expand_path('../../',__FILE__))
+APP_NAME = APP_ROOT.basename.to_s
+
+3. Make sure in the post request you have the methods to read and write the file that is coming in from the form.
+post '/service_providers/new' do
+  File.open(File.join(APP_ROOT, 'letsintervene', 'letsintervene_uploads',params[:thefile][:filename]), "w") do |f|
+      f.write(params['myfile'][:tempfile].read)
+    end
+  @service_provider = ServiceProvider.create(
+    :image_url => params[:image],
+    :name  => params[:org_name],
+    :street1  => params[:address],
+    :city => params[:city],
+    :state => params[:state],
+    :zipcode => params[:zip_code],
+    :work_phone => params[:org_phone_number],
+    :contact_person => params[:contact_person],
+    :contact_email => params[:email_address],
+    :mission => params[:mission],
+    :service_category_ids => params[:category]
+  )
+
+//notice that "thefile" name needs to be in the new object's form also.
+
+<!--
+Using carrierwave in sinatra -->
+
+1. Install gem carrierwave
+$  gem install carrierwave
+
+2. In main.rb
+require 'carrierwave'
+require 'carrierwave/orm/activerecord'
+
+3. In object's new page in the form:
+#service_providers_new.erb
+
+<form action="/service_providers/new" method="post" enctype="multipart/form-data">
+<strong>
+<label for="Image">  Image: </label>
+<p>Please pick an image: <input type="file" name="image_url"  </p>
+</strong>
+<p><label for="organizationsName "> Organization's Name: </label> </p>
+<input type="text" name="org_name" placeholder="Organization's name"></p>
+<p> Address: <input type="text" name="address"></p>
+<p> City: <input type="text" name="city"></p>
+<p> State: <input type="text" name="state"></p>
+<p> Zip code: <input type="text" name="zip_code"></p>
+<p> Phone number: <input type="text" name="org_phone_number" ></p>
+<input type="submit" value="Submit">
+</form>
+
+The important part is that the name you have in the database is the same as the name you have in the form.
+
+4.  In main.rb you need to send the information via post to the database.
+
+post '/service_providers/new' do
+  @service_provider = ServiceProvider.create(
+    :image_url => params[:image_url],
+    :name  => params[:org_name],
+    :street1  => params[:address],
+    :city => params[:city],
+    :state => params[:state],
+    :zipcode => params[:zip_code],
+    :work_phone => params[:org_phone_number],
+    :contact_person => params[:contact_person],
+    :contact_email => params[:email_address],
+    :mission => params[:mission],
+    :service_category_ids => params[:category]
+  )
+
+5. You will have a model for the carrierwave to work out of.
+# models> image_uploader.rb
+
+class ImageUploader < CarrierWave::Uploader::Base
+end
+
+
+6. in object's file
+# models > service_provider.rb
+
+You notice that you are calling mount_uploader and the column name in which you have the picture going to is calling the class ImgaeUplaoder. Also you have to make sure the column is attr_accessible.
+
+class ServiceProvider < ActiveRecord::Base
+  attr_accessible :name, :mission, :image_url, :website, :providers_email ,:street1 ,:street2, :city, :state, :zip_code, :work_phone, :fax,:infraction_supported, :other, :contact_person, :contact_email, :service_category_ids
+
+  has_and_belongs_to_many :service_categories
+
+  mount_uploader :image_url, ImageUploader
+
+end
+
+7. At this point you should be able to check the index page and have the image show up.
+#service_providers_index.erb
+
+<h2> Service Providers </h2>
+
+
+<table class="service-providers-list table table-striped">
+<tr>
+  <th></th>
+</tr>
+<% @service_providers.each do |service_provider| %>
+<tr>
+  <td>
+  <img src="<%= service_provider.image_url %>">
+</a>
+   <p class="name"> Name or image: <%= service_provider['image_url'] rescue nil %> </p>
+
+   <p class="name"> Name: <%= service_provider.name %> </p>
+   <ul>
+   <li>Mission: <%= service_provider.mission %></li>
+   <li> Guidance Interventions Targeted:
+    <% sc = [ ]  %>
+     <% service_provider.service_categories.each do |service_category| %>
+     <% sc << service_category.name %>
+     <% end %>
+     <%= sc.join(', ')  %> </li>
+     <li> Date Added: <%= service_provider.created_at.strftime("%Y-%m-%d") %> </li>
+     <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>">Show  </a>
+     <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>/edit">Edit  </a>
+     <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>/delete">Delete  </a>
+
+   </ul>
+   </td>
+ </tr>
+ <% end %>
+</table>
+
+
+Learning for today:
+You cannot add a string as a column within postgres. You can add a column and have it be a text. If you do that the text will not display the string you want from the url.

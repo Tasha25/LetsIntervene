@@ -6,17 +6,53 @@ require 'sinatra/reloader' if development?
 require 'active_record'
 require 'bcrypt'
 require 'pry'
+require 'pathname'
+require 'uri'
+require 'open-uri'
+require 'carrierwave'
+require 'carrierwave/orm/activerecord'
+require 'rmagick'
+require 'mini_magick'
 
+
+soda_token = "rB9mf0ACww6KyuStQtrbXtCKF"
 require_relative 'models/service_category'
+require_relative 'models/image_uploader'
 require_relative 'models/service_provider'
 require_relative 'models/user'
+
 require_relative 'methods_from_scratch/plural'
 
-ActiveRecord::Base.establish_connection(
-  :adapter =>'postgresql',
-  :host => 'localhost',
-  :database => 'letsintervene'
-  )
+
+# APP_ROOT = Pathname.new(File.expand_path('../../',__FILE__))
+# APP_NAME = APP_ROOT.basename.to_s
+
+
+# CarrierWave.configure do |config|
+#   if development?
+#     config.storage = :file
+#     config.root = File.join(APP_ROOT, 'public')
+#     config.store_dir = File.join('uploads')
+#   else
+#     # store on S3 or whatever
+#     raise "Not ready for production!"
+#   end
+# end
+
+
+
+
+before do
+  ActiveRecord::Base.establish_connection(
+    :adapter =>'postgresql',
+    :host => 'localhost',
+    :database => 'letsintervene'
+   )
+end
+
+after do
+  ActiveRecord::Base.connection.close
+end
 
 enable :sessions
 
@@ -25,71 +61,46 @@ get '/' do
 end
 
 get '/welcome' do
-  erb :welcome
+  erb :welcome, :layout => false
 end
 
 ######## Users section
 
-get '/users/login' do
-  erb :login
+get '/users/signin' do
+  erb :login, :layout => false
 end
 
-post "/users/login" do
-
-  def authenticate(email, password)
-    user = find_by_email(email)
-    if user && user.password_has == BCrypt::Engine.hash_secret(params[:password], password_salt)
-      user
-    else
-      nil
-    end
-  end
-
-  user = User.authenticate(params[:email], params[:password])
-
-  binding.pry
-  if user
-    session[:user_id] = user.id
-    redirect_to '/service_provider'
+post "/users/signin" do
+  if session[:user] = User.authenticate(params[:session][:email].downcase, params[:session][:password])
+    flash[:success]  = "Login successful"
+    redirect '/service_providers'
   else
-    erb :login
+    flash[:failure] = "Login failed - Try again"
+    redirect '/users/signin'
   end
-
 end
-
-
-#   @user = User.all
-#   if @user.has_key?(params[:username])
-#     user = @user[params[:username]]
-#     if user[:password_hash] == BCrypt::Engine.hash_secret(params[:password], user[:salt])
-#       session[:username] = params[:username]
-#       redirect "/"
-#     end
-#   end
-#   erb :login
-# end
 
 
 get '/users/signup' do
-  erb :user_new
+  erb :user_new, :layout => false
 end
 
 
 post '/users/signup' do
-
+  # this should be User.new instead of User.create
+  # User.create both calls User.new and then saves
   @user = User.create(
     :username => params[:username],
     :email => params[:email],
     :password => params[:password],
     :password_confirmation => params[:password_confirmation]
-    )
+  )
 
-  binding.pry
   session[:username] = params[:username]
 
   if @user.save
-    flash[:success] = "Welcome"
-    redirect '/users'
+    flash[:success] = "Welcome #{@user.username}"
+    redirect '/service_providers'
   else
     erb :user_new
   end
@@ -102,14 +113,12 @@ end
 
 
 get '/logout' do
-  session[:user_id] = nil
-  redirect_to '/'
+  session[:user] = nil
+  flash[:logged_out] = "You are logged out"
+  redirect '/'
 end
 
-
 ######## Service Providers
-
-
 
 # create an index page where users see a list of service providers
 get '/service_providers' do
@@ -127,9 +136,12 @@ end
 #The post will create a service provider service provider
 
 post '/service_providers/new' do
-
+  # this should also be ServiceProvider.new
+  p params
+binding.pry
   @service_provider = ServiceProvider.create(
-    :image_url => params[:image],
+    :image => params[:image],
+    :remote_image_url => params[:remote_image_url],
     :name  => params[:org_name],
     :street1  => params[:address],
     :city => params[:city],
@@ -140,14 +152,14 @@ post '/service_providers/new' do
     :contact_email => params[:email_address],
     :mission => params[:mission],
     :service_category_ids => params[:category]
-    )
+  )
+
 
   if @service_provider.save
     redirect '/service_providers'
   else
     redirect '/service_providers/new'
   end
-
 end
 
 
@@ -161,8 +173,30 @@ get '/service_providers/:id' do
 end
 
 
+get '/service_providers/:id/edit' do
+  @service_provider = ServiceProvider.find_by_id(params[:id])
+  @service_categories = ServiceCategory.all
+  erb :service_provider_update
+end
+
+post '/service_providers/:id' do
+  provider = ServiceProvider.find_by_id(params[:id])
+  provider.name = params[:service_provider]
+  provider.save
+  redirect to "/service_providers/#{id}"
+end
 
 
+get '/service_providers/:id/delete' do
+  @service_provider = ServiceProvider.find_by_id(params[:id])
+  erb :service_provider_delete
+end
+
+post '/service_providers/:id/delete' do
+  provider = ServiceProvider.find_by_id(params[:id])
+  provider.destroy
+  redirect to 'service_providers'
+end
 ####### Service Categories
 
 
@@ -180,6 +214,7 @@ end
 
 #create service category
 post '/service_categories/new' do
+  # this should also be new instead of create
   @service_category = ServiceCategory.create(:name => params[:service_category])
   if @service_category.save
     redirect "/service_categories/#{@service_category.id}"
@@ -200,19 +235,28 @@ end
 
 
 get '/service_categories/:id/edit' do
-  id = params[:id]
-  @service_category= ServiceCategory.find_by_id(id)
+  @service_category= ServiceCategory.find_by_id(params[:id])
   erb :service_category_update
 end
 
 post '/service_categories/:id' do
-  id = params[:id]
-  sc1 = ServiceCategory.find_by_id(id)
-  sc1.name = params[:service_category]
-  sc1.save
-  url = 'service_categories/' + id
-  redirect to url
+  category = ServiceCategory.find_by_id(params[:id])
+  category.name = params[:service_category]
+  category.save
+  redirect to "/service_categories/#{params[:id]}"
 end
+
+get '/service_categories/:id/delete' do
+  @service_category = ServiceCategory.find_by_id(params[:id])
+  erb :service_category_delete
+end
+
+post '/service_categories/:id/delete' do
+  category = ServiceCategory.find_by_id(params[:id])
+  category.destroy
+  redirect to 'service_categories'
+end
+
 
 ######## Users
 

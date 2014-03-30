@@ -16,7 +16,8 @@ class CreateServiceProvider < ActiveRecord::Migration
     create_table :service_providers do |t|
       t.string :name
       t.string :mission
-      t.string :image_url
+      t.string :image
+      t.string :remote_image_url;
       t.string :website
       t.string :providers_email
       t.string :contact_person
@@ -47,8 +48,8 @@ class CreateServiceCategory < ActiveRecord::Migration
     create_table :service_categories do |t|
       t.string :name
       t.timestamps
+    end
   end
-end
 
   def self.down
     drop_table :service_categories
@@ -69,7 +70,6 @@ class JoinTableServiceCategoriesServiceProviders < ActiveRecord::Migration
    def self.down
     drop_table :service_categories_service_providers
   end
-
 end
 
 
@@ -87,18 +87,18 @@ class User < ActiveRecord::Migration
     end
   end
 
-   def self.down
+  def self.down
     drop_table :users
   end
 end
 
 
 #call the migrations
-
-# CreateServiceProvider.up
+# CreateServiceProvider.down
+CreateServiceProvider.up
 # CreateServiceCategory.up
 # JoinTableServiceCategoriesServiceProviders.up
-User.up
+# User.up
 
 
 #you can now run the database by running ruby setup.rb

@@ -4,11 +4,12 @@
 
 
 
-Service Categories
+<h1>Service Categories </h1>
 
 
 <% @service_categories.each do |service_category| %>
 
-<%= service_category.name%> , <%= service_category.id %></br>
-
+<%= service_category.name%> , <%= service_category.id %>
+<a href="/service_categories/<%= service_category.id %>/edit"> Edit service category </a> </li></br>
+<a href="/service_categories/<%= service_category.id %>/delete"> Delete service category </a> </li></br>
 <% end %>

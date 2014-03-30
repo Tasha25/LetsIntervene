@@ -1,13 +1,11 @@
-<!-- # - allow users to see a link to add a service provider
+#  - allow users to see a link to add a service provider
 # - allow users to submit a service provider for us to add
 
- -->
- <ul>
-<li><a href="/service_providers/new">Add Service Provider</a> </li>
-<li><a href="/service_categories">See Service Categories</a> </li>
-<li> <a href="#">Suggest Service Provider</a></li>
-  </ul>
 
+
+<div id='flash' class='success'>
+<h2>  <%= flash[:success] %> </h2>
+</div>
 
 
 <h2> Service Providers </h2>
@@ -21,9 +19,14 @@
 <tr>
 
   <td>
-   <a href="/service_providers/<%= service_provider.id %>">
-  <img src="<%= service_provider['image_url'] %>">
-</a>
+
+
+  <img src="<%= service_provider.image.thumb %>">
+  <img src="<%= service_provider.remote_image_url %>" >
+
+
+   <p class="name"> Name or image: <%= service_provider['image'] %>   </p>
+
    <p class="name"> Name: <%= service_provider.name %> </p>
    <ul>
    <li>Mission: <%= service_provider.mission %></li>
@@ -35,6 +38,8 @@
      <%= sc.join(', ')  %> </li>
      <li> Date Added: <%= service_provider.created_at.strftime("%Y-%m-%d") %> </li>
      <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>">Show  </a>
+     <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>/edit">Edit  </a>
+     <a class="action show pull-right btn btn-xs btn-primary" href="/service_providers/<%= service_provider.id %>/delete">Delete  </a>
 
    </ul>
    </td>

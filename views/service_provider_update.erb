@@ -1,0 +1,32 @@
+
+<form action="/service_providers/<%= @service_provider.id %>" method="post">
+<label for="Image">  Image: </label>
+<input type="url" name="image" placeholder="image url">
+
+<label for="organizationsName ">Organization's Name: </label>
+<input type="text" value= <%= @service_provider.name %> name="org_name" placeholder="Organization's name"></p>
+<p> Address: <input type="text"  value= <%= @service_provider.street1 %> name="address"></p>
+<p> City: <input type="text"  value= <%= @service_provider.city %> name="city"></p>
+<p> State: <input type="text"  value= <%= @service_provider.state %> name="state"></p>
+<p> Zip code: <input type="text"  name="zip_code"></p>
+<p> Phone number: <input type="text" value= <%= @service_provider.work_phone %> name="org_phone_number" ></p>
+
+<p> Contact Person: <input type="text" name="contact_person"></p>
+<p> Email address: <input type="text" name="email_address"></p>
+<p> Phone number: <input type="text" name="phone_number"></p>
+<p> Mission Statement: <input type="text" name="mission"></p>
+
+
+
+<% if @service_categories.nil? %>
+  <p> Services Targeted:</p>
+<% @service_categories.each do |service_category| %>
+  <input type="checkbox" name="category[]" value="<%= service_category.id %>" <%= if service_category.id == @service_provider.service_category%>>
+  <%= service_category.name %> <br>
+
+<% end %>
+<% end %>
+
+<input type="submit" value="Submit">
+
+</form>

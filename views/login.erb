@@ -1,13 +1,37 @@
- <a href="/welcome">Go Back</a>
+
+<div id="flash" class="failure">
+<h2>  <%= flash[:failure] %> </h2>
+</div>
 
 
+<a href="/welcome">Go Back</a>
 
-<form action="/users/login" method="post">
-<p> User Login</p>
 
-<label> Email <input type="text" name="params[:email]"/> </label></br>
-<label> Password <input type="password" name="password"/> </label></br>
+<% if @user.nil? == false %>
 
-<input type="submit" value="Log in">
+  <% if @user.errors.any? %>
 
-</form>
+    <%= erb 'shared/_error_messages'.to_sym %>
+
+    <form action="/users/signin" method="post">
+    <p> User Login</p>
+
+    <label> Email <input type="text" name="[session][email]"/> </label></br>
+    <label> Password <input type="password" name="[session][password]"/> </label></br>
+
+    <input type="submit" value="Log in">
+
+    </form>
+    <% end %>
+
+    <% else %>
+
+    <form action="/users/signin" method="post">
+    <p> User Login</p>
+    <label> Email <input type="text" name="[session][email]"/> </label></br>
+    <label> Password <input type="password" name="[session][password]"/> </label></br>
+    <input type="submit" value="Log in">
+
+    </form>
+
+    <% end %>

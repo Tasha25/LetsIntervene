@@ -1,9 +1,11 @@
 
-<form action="/service_providers/new" method="post">
+<form action="/service_providers/new" method="post" enctype="multipart/form-data">
 <label for="Image">  Image: </label>
-<input type="url" name="image" placeholder="image url">
 
-<label for="organizationsName ">Organization's Name: </label>
+<p>Please pick an image: <input type="file" name="image">  </p>
+<p> or image url: <input type="text" name="remote_image_url"></p>
+
+<p><label for="organizationsName "> Organization's Name: </label> </p>
 <input type="text" name="org_name" placeholder="Organization's name"></p>
 <p> Address: <input type="text" name="address"></p>
 <p> City: <input type="text" name="city"></p>

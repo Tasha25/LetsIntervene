@@ -4,7 +4,7 @@ require_relative '../helpers/view_helpers'
 ######## Users section
 
 get '/users/signin' do
-  ViewHelper::render(:login, :layout => false)
+  render(:login, :layout => false)
 end
 
 post "/users/signin" do
@@ -19,7 +19,7 @@ end
 
 
 get '/users/signup' do
-  ViewHelper::render(:user_new, :layout => false)
+  render(:user_new, :layout => false)
 end
 
 
@@ -39,13 +39,13 @@ post '/users/signup' do
     flash[:success] = "Welcome #{@user.username}"
     redirect '/service_providers'
   else
-    ViewHelper::render('user_new')
+    render('user_new')
   end
 end
 
 get '/users' do
   @users = User.all
-  ViewHelper::render(:user_index)
+  render(:user_index)
 end
 
 

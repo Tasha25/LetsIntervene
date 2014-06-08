@@ -4,7 +4,7 @@ require_relative '../helpers/view_helpers'
 ######## Users section
 
 get '/users/signin' do
-  render(:login, :layout => false)
+  erb :login, :layout => false
 end
 
 post "/users/signin" do
@@ -19,7 +19,7 @@ end
 
 
 get '/users/signup' do
-  render(:user_new, :layout => false)
+  erb :user_new, :layout => false
 end
 
 
@@ -39,13 +39,13 @@ post '/users/signup' do
     flash[:success] = "Welcome #{@user.username}"
     redirect '/service_providers'
   else
-    render('user_new')
+    erb :user_new
   end
 end
 
 get '/users' do
   @users = User.all
-  render(:user_index)
+  erb :user_index
 end
 
 

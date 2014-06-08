@@ -1,0 +1,12 @@
+source 'https://rubygems.org'
+
+gem 'activerecord', '=3.2.0'
+gem 'activerecord-postgresql-adapter'
+gem 'sinatra'
+gem 'sinatra-flash'
+gem 'sinatra-reloader'
+gem 'bcrypt'
+gem 'pry'
+gem 'carrierwave'
+gem 'rmagick', '=2.13.2'
+gem 'mini_magick'

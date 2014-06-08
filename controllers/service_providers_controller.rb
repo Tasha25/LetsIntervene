@@ -1,129 +1,3 @@
-require 'rubygems'
-gem 'activerecord', '=3.2.0'
-require 'sinatra'
-require 'sinatra/flash'
-require 'sinatra/reloader' if development?
-require 'active_record'
-require 'bcrypt'
-require 'pry'
-require 'pathname'
-require 'uri'
-require 'open-uri'
-require 'carrierwave'
-require 'carrierwave/orm/activerecord'
-require 'rmagick'
-require 'mini_magick'
-
-
-soda_token = "rB9mf0ACww6KyuStQtrbXtCKF"
-require_relative 'models/service_category'
-require_relative 'models/image_uploader'
-require_relative 'models/service_provider'
-require_relative 'models/user'
-
-require_relative 'methods_from_scratch/methods'
-
-
-# APP_ROOT = Pathname.new(File.expand_path('../../',__FILE__))
-# APP_NAME = APP_ROOT.basename.to_s
-
-
-# CarrierWave.configure do |config|
-#   if development?
-#     config.storage = :file
-#     config.root = File.join(APP_ROOT, 'public')
-#     config.store_dir = File.join('uploads')
-#   else
-#     # store on S3 or whatever
-#     raise "Not ready for production!"
-#   end
-# end
-
-# requiring all controllers
-Dir[File.absolute_path(File.dirname(__FILE__)) + '/controllers/*.rb'].each { |file| require File.absolute_path(file) }
-
-before do
-  ActiveRecord::Base.establish_connection(
-    :adapter =>'postgresql',
-    :host => 'localhost',
-    :database => 'letsintervene'
-  )
-end
-
-after do
-  ActiveRecord::Base.connection.close
-end
-
-enable :sessions
-set :session_secret, 'secret'
-
-get '/' do
-  redirect to '/welcome'
-end
-
-get '/welcome' do
-  erb :welcome, :layout => false
-end
-<<<<<<< HEAD
-
-######## Users section
-
-get '/users/signin' do
-  erb :signin, :layout => false
-end
-
-post "/users/signin" do
-
-  if session[:user] = User.authenticate(params[:session][:email].downcase, params[:session][:password])
-    flash[:success]  = "Login successful"
-    redirect '/service_providers'
-  else
-    flash[:failure] = "Login failed - Try again"
-    @object = session[:user]
-    redirect 'users/signin'
-  end
-end
-
-
-get '/users/signup' do
-  erb :user_new, :layout => false
-end
-
-
-post '/users/signup' do
-  # this should be User.new instead of User.create
-  # User.create both calls User.new and then saves
-  @user = User.create(
-    :username => params[:username],
-    :email => params[:email],
-    :password => params[:password],
-    :password_confirmation => params[:password_confirmation]
-  )
-
-
-  session[:username] = params[:username]
-
-  if @user.save
-    flash[:success] = "Welcome #{@user.username}"
-    redirect '/service_providers'
-  else
-    @object = @user
-    erb :user_new, :layout => false
-  end
-end
-
-get '/users' do
-  @users = User.all
-  erb :user_index
-end
-
-
-get '/logout' do
-  session[:user] = nil
-  flash[:logged_out] = "You are logged out"
-  redirect '/'
-end
-
 ######## Service Providers
 
 # create an index page where users see a list of service providers
@@ -143,6 +17,8 @@ end
 
 post '/service_providers/new' do
   # this should also be ServiceProvider.new
+  # p params
+  # binding.pry
   @service_provider = ServiceProvider.create(
     :image => params[:image],
     :remote_image_url => params[:remote_image_url],
@@ -158,12 +34,11 @@ post '/service_providers/new' do
     :service_category_ids => params[:category]
   )
 
+
   if @service_provider.save
     redirect '/service_providers'
   else
-    @object = @service_provider
-    @service_categories = ServiceCategory.all
-    erb :service_provider_new
+    redirect '/service_providers/new'
   end
 end
 
@@ -264,7 +139,6 @@ end
 
 
 ######## Users
-
 get '/users' do
   erb :signup_page
 end
@@ -273,7 +147,6 @@ end
 
 post '/users/signin' do
   username = params[:username]
-  binding.pry
   if User.exists?(username: username)
     redirect to '/username_error'
   else
@@ -289,8 +162,3 @@ end
 get 'username_error' do
   erb :username_error
 end
-
-
-
-=======
->>>>>>> c704a1fdffc894f59b9b6f15733a6fcff384db11

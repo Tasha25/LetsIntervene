@@ -4,7 +4,7 @@ ActiveRecord::Base.establish_connection(
   :adapter =>'postgresql',
   :host => 'localhost',
   :database => 'letsintervene'
-  )
+)
 
 #migration into database will be:
 

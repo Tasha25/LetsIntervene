@@ -7,14 +7,14 @@ TBA
 1. Download and install [ImageMagick](http://www.imagemagick.org/)
 2. Run "bundle"
 3. Initial database setup 
-		  * run 'psql' *(to get into psql)*
-		  * run 'create database letsintervene' *(to create psql database)*
-		  * run '\q' *(exit psql)*
+    * run 'psql' *(to get into psql)*
+    * run 'create database letsintervene' *(to create psql database)*
+    * run '\q' *(exit psql)*
 4. Go to setup.rb and uncomment the following lines: 
-		  * CreateServiceProvider.up
-		  * CreateServiceCategory.up
-		  * JoinTableServiceCategoriesServiceProviders.up
-		  * User.up
+    * CreateServiceProvider.up
+    * CreateServiceCategory.up
+    * JoinTableServiceCategoriesServiceProviders.up
+    * User.up
 5. Run 'ruby setup.rb'
 6. Go to 'localhost:4567'
 

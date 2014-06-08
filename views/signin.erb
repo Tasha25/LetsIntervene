@@ -11,7 +11,7 @@
 
   <% if @user.errors.any? %>
 
-    <%= erb 'shared/_error_messages'.to_sym %>
+    <%= erb 'shared/_error_messages'.to_sym  %>
 
     <form action="/users/signin" method="post">
     <p> User Login</p>

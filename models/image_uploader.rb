@@ -8,7 +8,7 @@ def store_dir
 end
 
 version :thumb do
-  process :resize_to_limit => [200, 200]
+  process :resize_to_limit => [100, 100]
 end
 
 def extension_white_list

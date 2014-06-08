@@ -21,7 +21,7 @@ require_relative 'models/image_uploader'
 require_relative 'models/service_provider'
 require_relative 'models/user'
 
-require_relative 'methods_from_scratch/plural'
+require_relative 'methods_from_scratch/methods'
 
 
 # APP_ROOT = Pathname.new(File.expand_path('../../',__FILE__))
@@ -67,16 +67,18 @@ end
 ######## Users section
 
 get '/users/signin' do
-  erb :login, :layout => false
+  erb :signin, :layout => false
 end
 
 post "/users/signin" do
+
   if session[:user] = User.authenticate(params[:session][:email].downcase, params[:session][:password])
     flash[:success]  = "Login successful"
     redirect '/service_providers'
   else
     flash[:failure] = "Login failed - Try again"
-    redirect '/users/signin'
+    @object = session[:user]
+    redirect 'users/signin'
   end
 end
 
@@ -96,13 +98,15 @@ post '/users/signup' do
     :password_confirmation => params[:password_confirmation]
   )
 
+
   session[:username] = params[:username]
 
   if @user.save
     flash[:success] = "Welcome #{@user.username}"
     redirect '/service_providers'
   else
-    erb :user_new
+    @object = @user
+    erb :user_new, :layout => false
   end
 end
 
@@ -137,8 +141,6 @@ end
 
 post '/service_providers/new' do
   # this should also be ServiceProvider.new
-  p params
-binding.pry
   @service_provider = ServiceProvider.create(
     :image => params[:image],
     :remote_image_url => params[:remote_image_url],
@@ -154,11 +156,12 @@ binding.pry
     :service_category_ids => params[:category]
   )
 
-
   if @service_provider.save
     redirect '/service_providers'
   else
-    redirect '/service_providers/new'
+    @object = @service_provider
+    @service_categories = ServiceCategory.all
+    erb :service_provider_new
   end
 end
 
@@ -268,6 +271,7 @@ end
 
 post '/users/signin' do
   username = params[:username]
+  binding.pry
   if User.exists?(username: username)
     redirect to '/username_error'
   else

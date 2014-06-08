@@ -1,30 +1,83 @@
+<div id="flash" class="failure">
+<h2>  <%= flash[:failure] %> </h2>
+</div>
 
-<form action="/service_providers/new" method="post" enctype="multipart/form-data">
-<label for="Image">  Image: </label>
 
-<p>Please pick an image: <input type="file" name="image">  </p>
-<p> or image url: <input type="text" name="remote_image_url"></p>
+<% if @service_provider.nil? == false %>
 
-<p><label for="organizationsName "> Organization's Name: </label> </p>
-<input type="text" name="org_name" placeholder="Organization's name"></p>
-<p> Address: <input type="text" name="address"></p>
-<p> City: <input type="text" name="city"></p>
-<p> State: <input type="text" name="state"></p>
-<p> Zip code: <input type="text" name="zip_code"></p>
-<p> Phone number: <input type="text" name="org_phone_number" ></p>
+  <% if @service_provider.errors.any? %>
+    <%= erb 'shared/_error_messages'.to_sym %>
 
-<p> Contact Person: <input type="text" name="contact_person"></p>
-<p> Email address: <input type="text" name="email_address"></p>
-<p> Phone number: <input type="text" name="phone_number"></p>
-<p> Mission Statement: <input type="text" name="mission"></p>
 
-<p> Services Targeted:</p>
+    <form action="/service_providers/new" method="post" enctype="multipart/form-data">
 
-<%  @service_categories.each do |service_category| %>
-  <input type="checkbox" name="category[]" value=" <%= service_category.id %> "> <%= service_category.name %> <br>
+<h2> Organization's information </h2>
+    <label for="Image">  Logo: </label>
+   Upload image: <input type="file" name="image">
+    <p> or input image url: <input type="text" name="remote_image_url"></p>
+    <p><label for="organizationsName "> Name: </label>
+    <input type="text" name="org_name" placeholder=" ..."></p>
+    <p> Address: <input type="text" name="address"></p>
+    <p> City: <input type="text" name="city"></p>
+    <p> State: <input type="text" name="state"></p>
+    <p> Zip code: <input type="text" name="zip_code"></p>
+    <p> Phone number: <input type="text" name="org_phone_number" ></p>
+     <p> Mission or purpose: <input type="text" name="mission"></p>
+         <p> Services Targeted:</p>
+
+      <%  @service_categories.each do |service_category| %>
+        <input type="checkbox" name="category[]" value=" <%= service_category.id %> "> <%= service_category.name %> <br>
+
+        <% end %>
+
+<h2> Contact Person 1's information </h2>
+    <p> Name: <input type="text" name="contact_person"></p>
+    <p> Title: <input type="text" name=""></p>
+    <p> Email address: <input type="text" name="email_address"></p>
+    <p> Phone number: <input type="text" name="phone_number"></p>
+
+ <h2> Contact Person 2's information </h2>
+    <p> Name: <input type="text" name="contact_person"></p>
+    <p> Title: <input type="text" name=""></p>
+    <p> Email address: <input type="text" name="email_address"></p>
+    <p> Phone number: <input type="text" name="phone_number"></p>
+
+      <input type="submit" value="Submit">
+
+      </form>
+      <% end %>
+
+
+
+      <% else %>
+
+      <form action="/service_providers/new" method="post" enctype="multipart/form-data">
+      <label for="Image">  Image: </label>
+
+      <p>Please pick an image: <input type="file" name="image">  </p>
+      <p> or image url: <input type="text" name="remote_image_url"></p>
+
+      <p><label for="organizationsName "> Organization's Name: </label> </p>
+      <input type="text" name="org_name" placeholder="Organization's name"></p>
+      <p> Address: <input type="text" name="address"></p>
+      <p> City: <input type="text" name="city"></p>
+      <p> State: <input type="text" name="state"></p>
+      <p> Zip code: <input type="text" name="zip_code"></p>
+      <p> Phone number: <input type="text" name="org_phone_number" ></p>
+
+      <p> Contact Person: <input type="text" name="contact_person"></p>
+      <p> Email address: <input type="text" name="email_address"></p>
+      <p> Phone number: <input type="text" name="phone_number"></p>
+      <p> Mission Statement: <input type="text" name="mission"></p>
+
+      <p> Services Targeted:</p>
+
+      <%  @service_categories.each do |service_category| %>
+        <input type="checkbox" name="category[]" value=" <%= service_category.id %> "> <%= service_category.name %> <br>
+
+        <% end %>
+
+        <input type="submit" value="Submit">
+        </form>
 
 <% end %>
-
-<input type="submit" value="Submit">
-
-</form>

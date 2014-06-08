@@ -8,5 +8,10 @@ def pluralize_ng(number, singular, plural=nil)
     end
 end
 
-
+def split_name(model)
+  words = model.scan(/[A-Z][^A-Z]*/)
+  str = " "
+  words.each { |word| str += "#{word} "}
+  str
+end
 #puts pluralize_ng(2, 'dog')

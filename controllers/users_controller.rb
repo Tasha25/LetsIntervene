@@ -1,9 +1,10 @@
 require 'sinatra'
+require_relative '../helpers/view_helpers'
 
 ######## Users section
 
 get '/users/signin' do
-  erb :login, :layout => false
+  ViewHelper::render(:login, :layout => false)
 end
 
 post "/users/signin" do
@@ -18,7 +19,7 @@ end
 
 
 get '/users/signup' do
-  erb :user_new, :layout => false
+  ViewHelper::render(:user_new, :layout => false)
 end
 
 
@@ -38,13 +39,13 @@ post '/users/signup' do
     flash[:success] = "Welcome #{@user.username}"
     redirect '/service_providers'
   else
-    erb :user_new
+    ViewHelper::render('user_new')
   end
 end
 
 get '/users' do
   @users = User.all
-  erb :user_index
+  ViewHelper::render(:user_index)
 end
 
 

@@ -1,5 +1,4 @@
 require 'sinatra'
-require_relative '../helpers/view_helpers'
 
 ######## Users section
 

@@ -62,5 +62,5 @@ get '/' do
 end
 
 get '/welcome' do
-  erb :welcome, :layout => false
+   erb :welcome #, :layout => false
 end

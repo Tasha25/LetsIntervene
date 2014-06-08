@@ -3,7 +3,7 @@ require 'sinatra'
 ######## Users section
 
 get '/users/signin' do
-  erb :login, :layout => false
+  erb :login #, :layout => false
 end
 
 post "/users/signin" do
@@ -18,7 +18,7 @@ end
 
 
 get '/users/signup' do
-  erb :user_new, :layout => false
+  erb :user_new #, :layout => false
 end
 
 

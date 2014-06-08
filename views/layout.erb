@@ -1,23 +1,23 @@
-<!doctype html>
-<html lang="en">
+<html class="no-js" lang="en" >
+
 <head>
-  <meta charset="UTF-8">
-  <link rel="stylesheet" href="reset.css">
-  <link rel="stylesheet" href="bootstrap.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>LetsIntervene</title>
 
-<!-- you need to add the css/ part in front of the documents.
- -->
+  <link rel="stylesheet" href="css/normalize.css">
+  <link rel="stylesheet" href="css/foundation.css">
 
-  <title>Service Provider</title>
-  <style>
-    # img {
-    #   width: 100px;
-    #   height: 100px;
-    # }
-  </style>
+  <link rel="stylesheet" href="css/app.css">
+
+  <script src="js/vendor/modernizr.js"></script>
+
 </head>
+
 <body>
-  <header>
+
+
+<nav>
   <ul>
    <li>  <a href="/service_providers">Home</a></li>
    <li>  <a href="/logout">Logout</a></li>
@@ -26,12 +26,19 @@
 <li><a href="/service_categories">See Service Categories</a> </li>
 
  </ul>
-  </header>
+  </nav>
 
   <div id="container">
+
   <%= yield %>
+
+
   </div>
+
+<script src="js/vendor/jquery.js"></script>
+  <script src="js/foundation.min.js"></script>
+  <script>
+    $(document).foundation();
+  </script>
 </body>
 </html>
-
-<html>
